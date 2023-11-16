@@ -9,11 +9,14 @@ using AutoMapper;
 using Sibers.BLL.DTO.EmployeeDto_s;
 using Sibers.WebAPI.Models;
 using Sibers.BLL.Common.Exceptions;
+using static Sibers.WebAPI.Attributes.AuthAttribute;
+using Sibers.WebAPI.Attributes;
 
 namespace Sibers.WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthController : BaseController
     {
         private readonly UserManager<User> _userManager;
@@ -36,16 +39,13 @@ namespace Sibers.WebAPI.Controllers
         }
 
         [HttpPost("register")]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterDto register)
         {
             var existingUser = await _userManager.FindByNameAsync(register.UserName);
             if (existingUser != null)
             {
                 throw new Exception("User with this username already exists.");
-            }
-            if (register.Password != register.ConfirmPasseord)
-            {
-                throw new Exception("Password is miss macthing!");
             }
 
             var user = new User()
@@ -60,30 +60,35 @@ namespace Sibers.WebAPI.Controllers
             {
                 throw new Exception("MinLength=6!");
             }
-            await _signInManager.SignInAsync(user, isPersistent: false);
 
             var employee = _mapper.Map<CreateEmployeeDto>(register);
             employee.UserId = user.Id;
             var employeeResponse = await _service.CreateEmployee(employee);
             user.EmployeeId = Convert.ToInt32(employeeResponse.Message);
+            await _userManager.AddToRoleAsync(user, "Employee");
+            await _signInManager.SignInAsync(user, isPersistent: true);
             return Ok(user.Id);
         }
 
-        [HttpPost("/role/set")]
-        public async Task SetRole(long userId, long roleId)
+        [HttpPost("/role/setRoleToUser")]
+        [Auth(RoleTypes.Leader)]
+        public async Task SetRole(long userId, RoleTypes roleId)
         {
 
-            var role = await _roleManager.FindByIdAsync(roleId.ToString());
+            var role = await _roleManager.FindByIdAsync(((int)roleId).ToString());
             if (role is null)
             {
                 throw new NotFoundException(nameof(Role), roleId);
             }
-
             var user = await _userManager.FindByIdAsync(userId.ToString());
             if (user is null)
             {
                 throw new NotFoundException(nameof(Models.User), userId);
             }
+
+            var existingRoles = await _userManager.GetRolesAsync(user);
+            if (existingRoles.Any())
+                await _userManager.RemoveFromRolesAsync(user, existingRoles);
 
             var identityResult = await _userManager.AddToRoleAsync(user, role.Name);
 
@@ -94,6 +99,7 @@ namespace Sibers.WebAPI.Controllers
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto login)
         {
             var user = await _userManager.FindByNameAsync(login.UserName);
@@ -113,7 +119,6 @@ namespace Sibers.WebAPI.Controllers
             return Ok();
         }
         [HttpPost("logout")]
-        [Authorize]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();

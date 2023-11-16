@@ -7,9 +7,9 @@ namespace Sibers.BLL.Services.Interfaces
     public interface IProjectService : IService
     {
         Task<Response> CreateProject(CreateProjectDto project);
-        Task<ProjectData[]> GetProjects();
+        Task<List<ProjectVM>> GetProjects();
         Task<ProjectVM> GetProjectDetailesById(long projectId);
-        Task<ProjectVM[]> SearchProjects(SearchProjectDto searchParams);
+        Task<List<ProjectVM>> SearchProjects(SearchProjectDto searchParams);
         Task<Project> EditProjectById(EditProjectDto project);
         Task<Response> DeleteProjectById(long projectId);
         Task<Response> DeleteEmployeeFromProjectById(long employeeId, long projectId);

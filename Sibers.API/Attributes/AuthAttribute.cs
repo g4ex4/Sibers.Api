@@ -9,19 +9,19 @@ namespace Sibers.WebAPI.Attributes
         {
             var rolesList = new List<RoleTypes>(roles).Select(x => x.ToString());
 
-            var aloweRoles = "";
+            var allowRoles = "";
             foreach (var r in rolesList)
             {
-                aloweRoles += r;
+                allowRoles += r;
             }
-            Roles = aloweRoles;
+            Roles = allowRoles;
         }
 
         public enum RoleTypes
         {
-            Employee = 0,
-            ProjectManager = 1,
-            Leader = 2
+            Employee = 1,
+            ProjectManager,
+            Leader
         }
     }
 }

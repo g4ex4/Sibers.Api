@@ -6,11 +6,11 @@ namespace Sibers.BLL.Services.Interfaces
     public interface IJobService : IService
     {
         public Task<Response> CreateJob(CreateJobDto data);
-        public Task<JobData[]> GetAllJobs();
+        public Task<List<JobData>> GetAllJobs();
         public Task<JobVM> GetJobDetailesById(long id);
         public Task<JobVM> EditJobById(JobVM data);
         public Task<Response> DeleteJobById(long id);
-        public Task<JobVM[]> SearchJobs(SearchJobDto searchparams);
+        public Task<List<JobVM>> SearchJobs(SearchJobDto searchparams);
 
     }
 }

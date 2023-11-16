@@ -14,7 +14,7 @@ namespace Sibers.WebAPI.Models.DTO_s
         [MinLength(6)]
         public string Password { get; set; }
 
-        [Compare(nameof(Password))]
+        [Compare(nameof(Password), ErrorMessage = "Password miss matching")]
         public string ConfirmPasseord { get; set; }
         [EmailAddress]
         public string Email { get; set; }

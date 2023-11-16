@@ -34,11 +34,11 @@ namespace Sibers.BLL.Services.Implementation
             return new Response(200, $"Project with Id = {id} deleted successfully", true);
         }
 
-        public async Task<EmployeeData[]> GetAllEmployees()
+        public async Task<List<EmployeeData>> GetAllEmployees()
         {
             return await _uow.GetRepository<Employee>().GetAll()
                 .ProjectTo<EmployeeData>(_mapper.ConfigurationProvider)
-                .ToArrayAsync();
+                .ToListAsync();
         }
 
         public async Task<EmployeeVM> GetEmployeeDetailesById(long employeeId)

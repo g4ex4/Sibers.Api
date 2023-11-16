@@ -75,18 +75,18 @@ namespace Sibers.BLL.Services.Implementation
             origEntity.CustomerName = project.CustomerName;
             origEntity.EndDate = project.EndDate;
             origEntity.PerformerName = project.PerformerName;
-            origEntity.ProjectManagerId = projectManager == null ? null : projectManager.Id;
+            origEntity.ProjectManagerId = projectManager?.Id;
 
             _uow.GetRepository<Project>().Update(origEntity);
             await _uow.SaveChangesAsync();
             return origEntity;
         }
 
-        public async Task<ProjectData[]> GetProjects()
+        public async Task<List<ProjectVM>> GetProjects()
         {
             var projects = await _uow.GetRepository<Project>().GetAll()
-                .ProjectTo<ProjectData>(_mapper.ConfigurationProvider)
-                .ToArrayAsync();
+                .ProjectTo<ProjectVM>(_mapper.ConfigurationProvider)
+                .ToListAsync();
             return projects;
         }
 
@@ -101,13 +101,15 @@ namespace Sibers.BLL.Services.Implementation
 
             return _mapper.Map<ProjectVM>(project);
         }
-        public async Task<ProjectVM[]> SearchProjects(SearchProjectDto searchParams)
+        public async Task<List<ProjectVM>> SearchProjects(SearchProjectDto searchParams)
         {
             var projects = _uow.GetRepository<Project>().GetAll()
                 .Include(p => p.ProjectManager)
                 .Include(p => p.Jobs)
                 .Include(p => p.Employees)
                 .AsEnumerable();
+
+            if (!projects.Any()) return new List<ProjectVM> { };
 
             var result = _mapper.Map<List<ProjectVM>>(projects);
 
@@ -138,7 +140,7 @@ namespace Sibers.BLL.Services.Implementation
             if (searchParams.EmployeeId != null)
                 result = result.FindAll(x => x.Employees.FirstOrDefault(e => e.Id == searchParams.EmployeeId) != null);
 
-            return result.ToArray();
+            return result;
 
 
         }

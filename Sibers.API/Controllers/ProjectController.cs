@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sibers.BLL.DTO.ProjectDto_s;
 using Sibers.BLL.Services.Interfaces;
-using Sibers.DAL.Models;
-using System.Net;
+using Sibers.WebAPI.Attributes;
+using Sibers.WebAPI.Common.Helpers;
+using System.Security.Claims;
+using static Sibers.WebAPI.Attributes.AuthAttribute;
 
 namespace Sibers.WebAPI.Controllers
 {
@@ -28,7 +30,7 @@ namespace Sibers.WebAPI.Controllers
         public async Task<IActionResult> GetAll()
         {
             var result = await _service.GetProjects();
-            return Ok(result);
+            return Ok(FilterByRole.FilterProjects(result, RoleId, UserId));
         }
 
         [HttpGet("GetProjectDetailesById")]
@@ -41,7 +43,7 @@ namespace Sibers.WebAPI.Controllers
         public async Task<IActionResult> SearchProject([FromQuery] SearchProjectDto project)
         {
             var result = await _service.SearchProjects(project);
-            return Ok(result);
+            return Ok(FilterByRole.FilterProjects(result, RoleId, UserId));
         }
 
         [HttpPut("EditProjectById")]
@@ -68,6 +70,5 @@ namespace Sibers.WebAPI.Controllers
         {
             return Ok(await _service.PutEmployeeToProject(employeeId, projectId));
         }
-
     }
 }

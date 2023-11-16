@@ -30,7 +30,7 @@ namespace Sibers.BLL.Services.Implementation
                 Priority = data.Priority,
                 Comment = data.Comment,
                 JobStatus = data.JobStatus,
-                PerformerId = performer != null ? performer.Id : null,
+                PerformerId = performer?.Id,
                 ProjectId = project.Id,
                 AuthorizerId = data.AuthorizerId
             };
@@ -62,11 +62,11 @@ namespace Sibers.BLL.Services.Implementation
             return _mapper.Map<JobVM>(job);
         }
 
-        public async Task<JobData[]> GetAllJobs()
+        public async Task<List<JobData>> GetAllJobs()
         {
             var jobs = await _uow.GetRepository<Job>().GetAll()
                 .ProjectTo<JobData>(_mapper.ConfigurationProvider)
-                .ToArrayAsync();
+                .ToListAsync();
             return jobs;
         }
 
@@ -82,7 +82,7 @@ namespace Sibers.BLL.Services.Implementation
             return _mapper.Map<JobVM>(job);
         }
 
-        public async Task<JobVM[]> SearchJobs(SearchJobDto searchParams)
+        public async Task<List<JobVM>> SearchJobs(SearchJobDto searchParams)
         {
             var jobs = _uow.GetRepository<Job>().GetAll()
                 .Include(p => p.Authorizer)
@@ -91,6 +91,8 @@ namespace Sibers.BLL.Services.Implementation
                 .AsEnumerable();
 
             var result = _mapper.Map<List<JobVM>>(jobs);
+
+            if (!result.Any()) return new List<JobVM> { };
 
             if (!string.IsNullOrEmpty(searchParams.Name))
                 result = result.FindAll(x => x.Name == searchParams.Name);
@@ -113,7 +115,7 @@ namespace Sibers.BLL.Services.Implementation
             if (searchParams.ProjectId != null)
                 result = result.FindAll(x => x.ProjectId == searchParams.ProjectId);
 
-            return result.ToArray();
+            return result;
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Sibers.BLL.DTO.JobDto_s
 {
-    public class CreateJobDto : IMapWith<Job>
+    public class CreateJobDto
     {
         public string Name { get; set; }
         public string Comment { get; set; }

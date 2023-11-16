@@ -1,11 +1,5 @@
-﻿using Sibers.BLL.DTO.EmployeeDto_s;
-using Sibers.BLL.DTO.ProjectDto_s;
-using Sibers.DAL.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Sibers.DAL.Enums;
+using System.Text.Json.Serialization;
 
 namespace Sibers.BLL.DTO.JobDto_s
 {

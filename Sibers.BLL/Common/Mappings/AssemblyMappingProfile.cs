@@ -61,6 +61,8 @@ namespace Sibers.BLL.Common.Mappings
                 opt => opt.MapFrom(e => e.MiddleName))
                 .ForMember(e => e.Email,
                 opt => opt.MapFrom(e => e.Email))
+                .ForMember(e => e.UserId,
+                opt => opt.MapFrom(e => e.UserId))
                 .ReverseMap();
 
             CreateMap<Employee, CreateEmployeeDto>()
