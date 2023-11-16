@@ -15,7 +15,7 @@ namespace Sibers.BLL.DTO.ProjectDto_s
         public string PerformerName { get; set; }
         public int Priority { get; set; }
         [DataType(DataType.Date)]
-        public DateOnly? EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
         public long? ProjectManagerId { get; set; }
 
         public void Mapping(Profile profile)

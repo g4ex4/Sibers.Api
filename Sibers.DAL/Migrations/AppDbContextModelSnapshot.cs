@@ -47,6 +47,7 @@ namespace Sibers.DAL.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<long?>("UserId")
+                        .IsRequired()
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -62,7 +63,7 @@ namespace Sibers.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("AuthorizerId")
+                    b.Property<long?>("AuthorizerId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Comment")
@@ -76,16 +77,13 @@ namespace Sibers.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<long>("PerformerId")
+                    b.Property<long?>("PerformerId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
                     b.Property<long>("ProjectId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
@@ -111,8 +109,8 @@ namespace Sibers.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly?>("EndDate")
-                        .HasColumnType("DateOnly2");
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -128,8 +126,8 @@ namespace Sibers.DAL.Migrations
                     b.Property<long?>("ProjectManagerId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("DateOnly2");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -158,19 +156,18 @@ namespace Sibers.DAL.Migrations
                     b.HasOne("Sibers.DAL.Models.Employee", "Authorizer")
                         .WithMany("AuthorizedJobs")
                         .HasForeignKey("AuthorizerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasPrincipalKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Sibers.DAL.Models.Employee", "Performer")
                         .WithMany("PerformingJobs")
                         .HasForeignKey("PerformerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Sibers.DAL.Models.Project", "Project")
                         .WithMany("Jobs")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Authorizer");

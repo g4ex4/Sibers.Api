@@ -21,7 +21,7 @@ namespace Sibers.BLL.Services.Implementation
             Employee newEmployee = _mapper.Map<Employee>(dto);
             await _uow.GetRepository<Employee>().AddAsync(newEmployee);
             await _uow.SaveChangesAsync();
-            return new Response(200, $"{nameof(Employee)} created with Id = {newEmployee.Id}", true);
+            return new Response(200, $"{newEmployee.Id}", true);
 
         }
 
@@ -39,6 +39,19 @@ namespace Sibers.BLL.Services.Implementation
             return await _uow.GetRepository<Employee>().GetAll()
                 .ProjectTo<EmployeeData>(_mapper.ConfigurationProvider)
                 .ToArrayAsync();
+        }
+
+        public async Task<EmployeeVM> GetEmployeeDetailesById(long employeeId)
+        {
+            var employee = await _uow.GetRepository<Employee>()
+                .Include(e => e.ManagedProjects)
+                .Include(e => e.Projects)
+                .Include(e => e.PerformingJobs)
+                .Include(e => e.AuthorizedJobs)
+                .FirstOrDefaultAsync(x => x.Id == employeeId);
+            if (employee == null) throw new NotFoundException(nameof(Employee), employeeId);
+
+            return _mapper.Map<EmployeeVM>(employee);                
         }
 
         public async Task<EmployeeData> EditEmployeeById(EmployeeData data)

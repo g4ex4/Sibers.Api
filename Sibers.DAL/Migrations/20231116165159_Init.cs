@@ -20,11 +20,13 @@ namespace Sibers.DAL.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MiddleName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Employees", x => x.Id);
+                    table.UniqueConstraint("AK_Employees_UserId", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
@@ -37,8 +39,8 @@ namespace Sibers.DAL.Migrations
                     CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PerformerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Priority = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "Date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "Date", nullable: true),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ProjectManagerId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
@@ -62,9 +64,8 @@ namespace Sibers.DAL.Migrations
                     Priority = table.Column<int>(type: "int", nullable: false),
                     JobStatus = table.Column<int>(type: "int", nullable: false),
                     ProjectId = table.Column<long>(type: "bigint", nullable: false),
-                    AuthorizerId = table.Column<long>(type: "bigint", nullable: false),
-                    PerformerId = table.Column<long>(type: "bigint", nullable: false),
-                    UserId = table.Column<long>(type: "bigint", nullable: false)
+                    AuthorizerId = table.Column<long>(type: "bigint", nullable: true),
+                    PerformerId = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -73,7 +74,7 @@ namespace Sibers.DAL.Migrations
                         name: "FK_Jobs_Employees_AuthorizerId",
                         column: x => x.AuthorizerId,
                         principalTable: "Employees",
-                        principalColumn: "Id");
+                        principalColumn: "UserId");
                     table.ForeignKey(
                         name: "FK_Jobs_Employees_PerformerId",
                         column: x => x.PerformerId,
@@ -83,7 +84,8 @@ namespace Sibers.DAL.Migrations
                         name: "FK_Jobs_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

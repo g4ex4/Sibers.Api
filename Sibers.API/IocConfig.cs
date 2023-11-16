@@ -5,6 +5,7 @@ using Sibers.DAL;
 using Sibers.DAL.Common;
 using Sibers.DAL.Implementations;
 using Sibers.DAL.Interfaces;
+using Sibers.WebAPI.IdentityData;
 using System.Reflection;
 
 namespace Sibers.WebAPI
@@ -22,7 +23,7 @@ namespace Sibers.WebAPI
         }
 
         /// <summary>
-        /// Метод расширения добавляющий UnitOfWork
+        /// Метод расширения добавляющий UnitOfWork и IdentityContext
         /// </summary>
         public static IServiceCollection AddUnitOfWork(this IServiceCollection services, IConfiguration configuration)
         {
@@ -31,7 +32,8 @@ namespace Sibers.WebAPI
                 opt.UseSqlServer(configuration.GetConnectionString("AppDbContext"));
             });
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
+            services.AddDbContext<IdentityContext>(opt
+            => opt.UseSqlServer(configuration.GetConnectionString("IdentityDbContext")));
             return services;
         }
 

@@ -12,10 +12,9 @@ namespace Sibers.DAL.Models
         public Project Project { get; set; }
         public long ProjectId { get; set; }
         public Employee Authorizer { get; set; }
-        public long AuthorizerId { get; set; }
-        public Employee Performer { get; set; }
-        public long PerformerId { get; set; }
-        public long UserId { get; set; }
+        public long? AuthorizerId { get; set; }
+        public Employee? Performer { get; set; }
+        public long? PerformerId { get; set; }
 
     }
 }

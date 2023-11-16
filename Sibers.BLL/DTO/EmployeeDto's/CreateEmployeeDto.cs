@@ -11,7 +11,7 @@ namespace Sibers.BLL.DTO.EmployeeDto_s
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
-        [DataType(DataType.EmailAddress)]
+        [DataType(DataType.EmailAddress), EmailAddress]
         public string Email { get; set; }
         [JsonIgnore]
         public long? UserId { get; set; }

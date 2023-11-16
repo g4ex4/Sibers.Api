@@ -23,6 +23,12 @@ namespace Sibers.DAL.EntityConfigurations
                         pe.HasKey(pe => new { pe.ProjectId, pe.EmployeeId });
                         pe.ToTable("ProjectEmployee");
                     });
+
+
+            builder.HasMany(e => e.AuthorizedJobs)
+                .WithOne(e => e.Authorizer)
+                .HasPrincipalKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

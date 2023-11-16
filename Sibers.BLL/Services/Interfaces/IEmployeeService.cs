@@ -9,6 +9,7 @@ namespace Sibers.BLL.Services.Interfaces
         Task<EmployeeData[]> GetAllEmployees();
         Task<EmployeeData> EditEmployeeById(EmployeeData data);
         Task<Response> DeleteEmployeeById(long id);
+        Task<EmployeeVM> GetEmployeeDetailesById(long employeeId);
 
     }
 }

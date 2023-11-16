@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sibers.BLL.DTO.EmployeeDto_s;
 using Sibers.BLL.Services.Interfaces;
@@ -6,6 +7,7 @@ using Sibers.BLL.Services.Interfaces;
 namespace Sibers.WebAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class EmployeeController : BaseController
     {
         private readonly IMapper _mapper;
@@ -25,6 +27,12 @@ namespace Sibers.WebAPI.Controllers
         public async Task<IActionResult> GetAllEmployees()
         {
             return Ok(await _service.GetAllEmployees());
+        }
+
+        [HttpGet("GetEmployeeDetailesById")]
+        public async Task<IActionResult> GetEmployeeDetailesById(long employeeId)
+        {
+            return Ok(await _service.GetEmployeeDetailesById(employeeId));
         }
 
         [HttpPut("EditEmployeeById")]

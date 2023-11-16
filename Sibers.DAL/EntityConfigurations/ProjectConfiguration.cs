@@ -11,7 +11,7 @@ namespace Sibers.DAL.EntityConfigurations
             builder.HasMany(p => p.Jobs)
                 .WithOne(j => j.Project)
                 .HasForeignKey(j => j.ProjectId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(p => p.ProjectManager)
                 .WithMany(e => e.ManagedProjects)

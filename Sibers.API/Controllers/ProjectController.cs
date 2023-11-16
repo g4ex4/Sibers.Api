@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sibers.BLL.DTO.ProjectDto_s;
 using Sibers.BLL.Services.Interfaces;
 using Sibers.DAL.Models;
+using System.Net;
 
 namespace Sibers.WebAPI.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize]
     public class ProjectController : BaseController
     {
         private readonly IMapper _mapper;
@@ -26,6 +29,12 @@ namespace Sibers.WebAPI.Controllers
         {
             var result = await _service.GetProjects();
             return Ok(result);
+        }
+
+        [HttpGet("GetProjectDetailesById")]
+        public async Task<IActionResult> GetProjectDetailesById(long projectId)
+        {
+            return Ok(await _service.GetProjectDetailesById(projectId));
         }
 
         [HttpGet("SearchProject")]

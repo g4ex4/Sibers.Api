@@ -8,10 +8,11 @@ namespace Sibers.BLL.Services.Interfaces
     {
         Task<Response> CreateProject(CreateProjectDto project);
         Task<ProjectData[]> GetProjects();
-        Task<ProjectData[]> SearchProjects(SearchProjectDto searchParams);
+        Task<ProjectVM> GetProjectDetailesById(long projectId);
+        Task<ProjectVM[]> SearchProjects(SearchProjectDto searchParams);
         Task<Project> EditProjectById(EditProjectDto project);
         Task<Response> DeleteProjectById(long projectId);
         Task<Response> DeleteEmployeeFromProjectById(long employeeId, long projectId);
-        Task<ProjectData> PutEmployeeToProject(long employeeId, long projectId);
+        Task<ProjectVM> PutEmployeeToProject(long employeeId, long projectId);
     }
 }
