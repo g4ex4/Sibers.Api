@@ -68,7 +68,8 @@ namespace Sibers.WebAPI.Controllers
         [HttpGet("SearchJobs")]
         public async Task<IActionResult> SearchJobs([FromQuery]SearchJobDto searchParams)
         {
-            return Ok(await _service.SearchJobs(searchParams));
+            var result = await _service.SearchJobs(searchParams);
+            return Ok(FilterByRole.FilterJobs(result, RoleId, UserId));
         }
     }
 }
