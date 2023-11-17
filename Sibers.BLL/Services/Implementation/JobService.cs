@@ -7,6 +7,7 @@ using Sibers.BLL.DTO.EmployeeDto_s;
 using Sibers.BLL.DTO.JobDto_s;
 using Sibers.BLL.DTO.ProjectDto_s;
 using Sibers.BLL.Services.Interfaces;
+using Sibers.DAL.Enums;
 using Sibers.DAL.Interfaces;
 using Sibers.DAL.Models;
 
@@ -48,7 +49,7 @@ namespace Sibers.BLL.Services.Implementation
             return new Response(200, $"Project with Id = {id} deleted successfully", true);
         }
 
-        public async Task<JobVM> EditJobById(JobVM data)
+        public async Task<JobData> EditJobById(JobData data)
         {
             var job = await _uow.GetRepository<Job>()
                 .AsNoTracking()
@@ -59,13 +60,16 @@ namespace Sibers.BLL.Services.Implementation
             job = _mapper.Map<Job>(data);
             _uow.GetRepository<Job>().Update(job);
             await _uow.SaveChangesAsync();
-            return _mapper.Map<JobVM>(job);
+            return _mapper.Map<JobData>(job);
         }
 
-        public async Task<List<JobData>> GetAllJobs()
+        public async Task<List<JobVM>> GetAllJobs()
         {
             var jobs = await _uow.GetRepository<Job>().GetAll()
-                .ProjectTo<JobData>(_mapper.ConfigurationProvider)
+                .Include(p => p.Authorizer)
+                .Include(p => p.Performer)
+                .Include(p => p.Project)
+                .ProjectTo<JobVM>(_mapper.ConfigurationProvider)
                 .ToListAsync();
             return jobs;
         }
@@ -116,6 +120,20 @@ namespace Sibers.BLL.Services.Implementation
                 result = result.FindAll(x => x.ProjectId == searchParams.ProjectId);
 
             return result;
+        }
+
+        public async Task<JobData> SetStatusToJob(long id, JobStatus status)
+        {
+            var job = await _uow.GetRepository<Job>()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (job == null) throw new NotFoundException(nameof(Job), id);
+
+            job.JobStatus = status;
+            _uow.GetRepository<Job>().Update(job);
+            await _uow.SaveChangesAsync();
+            return _mapper.Map<JobData>(job);
         }
     }
 }

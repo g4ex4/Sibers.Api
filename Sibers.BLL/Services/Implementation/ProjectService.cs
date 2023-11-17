@@ -58,7 +58,7 @@ namespace Sibers.BLL.Services.Implementation
             if (project == null) throw new NotFoundException(nameof(Project), employeeId);
             _uow.GetRepository<ProjectEmployee>().Delete(project);
             await _uow.SaveChangesAsync();
-            return new Response(200, "Deleted successfully", true);
+            return new Response(200, "Employee deleted successfully", true);
         }
 
         public async Task<Project> EditProjectById(EditProjectDto project)

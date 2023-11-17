@@ -48,6 +48,8 @@ namespace Sibers.BLL.Common.Mappings
                     opt => opt.MapFrom(project => project.EndDate))
                 .ForMember(data => data.ProjectManagerId,
                     opt => opt.MapFrom(project => project.ProjectManagerId))
+                .ForMember(data => data.ProjectManager,
+                    opt => opt.MapFrom(project => project.ProjectManager))
                 .ReverseMap();
 
             CreateMap<Employee, EmployeeData>()

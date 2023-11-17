@@ -1,5 +1,6 @@
 ﻿using Sibers.BLL.DTO.EmployeeDto_s;
 using Sibers.BLL.DTO.JobDto_s;
+using System.Text.Json.Serialization;
 
 namespace Sibers.BLL.DTO.ProjectDto_s
 {
@@ -13,5 +14,7 @@ namespace Sibers.BLL.DTO.ProjectDto_s
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public long? ProjectManagerId { get; set; }
+        [JsonIgnore]
+        public EmployeeData ProjectManager { get; set; }
     }
 }

@@ -20,17 +20,19 @@ namespace Sibers.WebAPI.Common.Helpers
             return projects;
         }
 
-        //public static List<JobVM> FilterJobs(List<JobVM> jobs, long? roleId, long? userId)
-        //{
-        //    switch (roleId)
-        //    {
-        //        case 1:
-        //            return jobs.FindAll(x => x.Performer.UserId == userId);
-        //        case 2:
-        //            return jobs.FindAll(x => x.Project.ProjectManagerId == userId);
+        public static List<JobVM> FilterJobs(List<JobVM> jobs, long? roleId, long? userId)
+        {
+            switch (roleId)
+            {
+                case 1:
+                    return jobs.FindAll(x => x.Performer != null)
+                        .FindAll(x => x.Performer.UserId == userId);
+                case 2:
+                    return jobs.FindAll(x => x.Project.ProjectManager != null)
+                        .FindAll(x => x.Project.ProjectManager.UserId == userId);
 
-        //    }
-        //    return jobs;
-        //}
+            }
+            return jobs;
+        }
     }
 }

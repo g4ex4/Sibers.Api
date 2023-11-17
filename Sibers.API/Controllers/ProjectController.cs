@@ -20,6 +20,7 @@ namespace Sibers.WebAPI.Controllers
             => (_mapper, _service) = (mapper, service);
 
         [HttpPost("Create")]
+        [Auth(RoleTypes.Leader)]
         public async Task<IActionResult> Create([FromBody] CreateProjectDto project)
         {
             if (project == null) throw new ArgumentNullException(nameof(project));
@@ -36,7 +37,8 @@ namespace Sibers.WebAPI.Controllers
         [HttpGet("GetProjectDetailesById")]
         public async Task<IActionResult> GetProjectDetailesById(long projectId)
         {
-            return Ok(await _service.GetProjectDetailesById(projectId));
+            await _service.GetProjectDetailesById(projectId);
+            return Ok();
         }
 
         [HttpGet("SearchProject")]
@@ -47,6 +49,7 @@ namespace Sibers.WebAPI.Controllers
         }
 
         [HttpPut("EditProjectById")]
+        [Auth(RoleTypes.Leader)]
         public async Task<IActionResult> EditProjectById(EditProjectDto project)
         {
             if (project == null) throw new ArgumentNullException(nameof(project));
@@ -54,18 +57,21 @@ namespace Sibers.WebAPI.Controllers
         }
 
         [HttpDelete("DeleteProjectById")]
+        [Auth(RoleTypes.Leader)]
         public async Task<IActionResult> DeleteProjectById (long projectId)
         {
             return Ok(await _service.DeleteProjectById(projectId));
         }
 
         [HttpDelete("DeleteEmployeeFromProjectById")]
+        [Auth(RoleTypes.Leader, RoleTypes.ProjectManager)]
         public async Task<IActionResult> DeleteEmployeeFromProjectById(long employeeId, long projectId)
         {
             return Ok(await _service.DeleteEmployeeFromProjectById(employeeId, projectId));
         }
 
         [HttpPut("PutEmployeeToProject")]
+        [Auth(RoleTypes.Leader, RoleTypes.ProjectManager)]
         public async Task<IActionResult> PutEmployeeToProject(long employeeId, long projectId)
         {
             return Ok(await _service.PutEmployeeToProject(employeeId, projectId));
