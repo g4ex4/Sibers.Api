@@ -125,6 +125,13 @@ namespace Sibers.WebAPI.Controllers
             return Ok();
         }
 
+        [HttpPost("GetCurrentRole")]
+        public async Task<IActionResult> GetCurrentRole()
+        {
+            var result = Enum.GetName(typeof(RoleTypes), RoleId.Value);
+            return Ok(result);
+        }
+
         private async Task<ClaimsIdentity> GetIdentityAsync(User user)
         {
             var claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };

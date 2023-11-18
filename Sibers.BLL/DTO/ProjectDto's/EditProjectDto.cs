@@ -30,8 +30,6 @@ namespace Sibers.BLL.DTO.ProjectDto_s
                     opt => opt.MapFrom(dto => dto.Priority))
                 .ForMember(project => project.EndDate,
                     opt => opt.MapFrom(dto => dto.EndDate))
-                .ForMember(project => project.ProjectManagerId,
-                    opt => opt.MapFrom(dto => dto.ProjectManagerId))
                 .ReverseMap();
         }
     }

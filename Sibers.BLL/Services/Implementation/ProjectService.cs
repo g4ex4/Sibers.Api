@@ -18,23 +18,15 @@ namespace Sibers.BLL.Services.Implementation
 
         public ProjectService(IUnitOfWork uow, IMapper mapper)
             => (_uow, _mapper) = (uow, mapper);
-        public async Task<Response> CreateProject(CreateProjectDto project)
+        public async Task<Response> CreateProject(CreateProjectDto dto)
         {
-            Project newProject = new Project()
-            {
-                Name = project.Name,
-                CustomerName = project.CustomerName,
-                PerformerName = project.PerformerName,
-                StartDate = DateTime.Now,
-                EndDate = project.EndDate,
-                Priority = project.Priority,
-            };
+            Project newProject = _mapper.Map<Project>(dto);
             var projectManager = 
                 await _uow.GetRepository<Employee>()
                 .Include(x => x.ManagedProjects)
-                .FirstOrDefaultAsync(x => x.Id == project.ProjectManagerId);
+                .FirstOrDefaultAsync(x => x.Id == dto.ProjectManagerId);
 
-            newProject.ProjectManager = projectManager;
+            newProject.ProjectManagerId = projectManager?.Id;
 
             await _uow.GetRepository<Project>().AddAsync(newProject);
             await _uow.SaveChangesAsync();
@@ -61,20 +53,16 @@ namespace Sibers.BLL.Services.Implementation
             return new Response(200, "Employee deleted successfully", true);
         }
 
-        public async Task<Project> EditProjectById(EditProjectDto project)
+        public async Task<Project> EditProjectById(EditProjectDto dto)
         {
-            var origEntity = _uow.GetRepository<Project>()
-                .FirstOrDefaultAsync(x => x.Id == project.Id).Result;
-            if (origEntity == null) throw new NotFoundException(nameof(Project), project.Id);
+            var origEntity = _uow.GetRepository<Project>().AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == dto.Id).Result;
+            if (origEntity == null) throw new NotFoundException(nameof(Project), dto.Id);
 
             var projectManager = _uow.GetRepository<Employee>()
-                .FirstOrDefaultAsync(x => x.Id == project.ProjectManagerId).Result;
+                .FirstOrDefaultAsync(x => x.Id == dto.ProjectManagerId).Result;
 
-            origEntity.Priority = project.Priority;
-            origEntity.Name = project.Name;
-            origEntity.CustomerName = project.CustomerName;
-            origEntity.EndDate = project.EndDate;
-            origEntity.PerformerName = project.PerformerName;
+            origEntity = _mapper.Map<Project>(dto);
             origEntity.ProjectManagerId = projectManager?.Id;
 
             _uow.GetRepository<Project>().Update(origEntity);

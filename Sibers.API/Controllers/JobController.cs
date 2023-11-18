@@ -1,13 +1,11 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
 using Sibers.BLL.DTO.JobDto_s;
 using Sibers.BLL.Services.Interfaces;
 using Sibers.DAL.Enums;
 using Sibers.WebAPI.Attributes;
 using Sibers.WebAPI.Common.Helpers;
-using System.Security.Claims;
 using static Sibers.WebAPI.Attributes.AuthAttribute;
 
 namespace Sibers.WebAPI.Controllers
@@ -16,10 +14,9 @@ namespace Sibers.WebAPI.Controllers
     [Authorize]
     public class JobController : BaseController
     {
-        private readonly IMapper _mapper;
         private readonly IJobService _service;
-        public JobController(IMapper mapper, IJobService service)
-            => (_mapper, _service) = (mapper, service);
+        public JobController(IJobService service)
+            => (_service) = (service);
 
         [HttpPost("Create")]
         [Auth(RoleTypes.Leader, RoleTypes.ProjectManager)]
@@ -44,7 +41,7 @@ namespace Sibers.WebAPI.Controllers
         }
 
         [HttpPut("EditJobById")]
-        [Auth(RoleTypes.Leader, RoleTypes.ProjectManager)]
+        [Auth(RoleTypes.ProjectManager, RoleTypes.Leader)]
         public async Task<IActionResult> EditJobById(JobData data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));

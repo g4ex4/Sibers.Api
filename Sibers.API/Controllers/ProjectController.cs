@@ -1,11 +1,9 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sibers.BLL.DTO.ProjectDto_s;
 using Sibers.BLL.Services.Interfaces;
 using Sibers.WebAPI.Attributes;
 using Sibers.WebAPI.Common.Helpers;
-using System.Security.Claims;
 using static Sibers.WebAPI.Attributes.AuthAttribute;
 
 namespace Sibers.WebAPI.Controllers
@@ -14,10 +12,9 @@ namespace Sibers.WebAPI.Controllers
     [Authorize]
     public class ProjectController : BaseController
     {
-        private readonly IMapper _mapper;
         private readonly IProjectService _service;
-        public ProjectController(IMapper mapper, IProjectService service)
-            => (_mapper, _service) = (mapper, service);
+        public ProjectController(IProjectService service)
+            => (_service) = (service);
 
         [HttpPost("Create")]
         [Auth(RoleTypes.Leader)]

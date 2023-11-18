@@ -74,7 +74,7 @@ namespace Sibers.WebAPI
             services.AddAutoMapper(config =>
             {
                 config.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
-                config.AddProfile(new AssemblyMappingProfile(typeof(AppDbContext).Assembly));
+                config.AddProfile(new AssemblyMappingProfile(typeof(IService).Assembly));
             });
 
             return services;

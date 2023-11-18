@@ -25,19 +25,12 @@ namespace Sibers.BLL.Services.Implementation
             if (project == null) throw new NotFoundException(nameof(project), data.ProjectId);
             var performer = await _uow.GetRepository<Employee>().FirstOrDefaultAsync(x => x.Id == data.PerformerId);
 
-            Job newJob = new Job()
-            {
-                Name = data.Name,
-                Priority = data.Priority,
-                Comment = data.Comment,
-                JobStatus = data.JobStatus,
-                PerformerId = performer?.Id,
-                ProjectId = project.Id,
-                AuthorizerId = data.AuthorizerId
-            };
-            await _uow.GetRepository<Job>().AddAsync(newJob);
+            Job job = _mapper.Map<Job>(data);
+            job.PerformerId = performer?.Id;
+
+            await _uow.GetRepository<Job>().AddAsync(job);
             await _uow.SaveChangesAsync();
-            return new Response(200, $"{nameof(Job)} created with Id = {newJob.Id}", true);
+            return new Response(200, $"{nameof(Job)} created with Id = {job.Id}", true);
         }
 
         public async Task<Response> DeleteJobById(long id)
