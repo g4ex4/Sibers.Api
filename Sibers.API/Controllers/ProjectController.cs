@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sibers.BLL.Common.Responses;
 using Sibers.BLL.DTO.ProjectDto_s;
 using Sibers.BLL.Services.Interfaces;
-using Sibers.WebAPI.Attributes;
 using Sibers.WebAPI.Common.Helpers;
-using static Sibers.WebAPI.Attributes.AuthAttribute;
 
 namespace Sibers.WebAPI.Controllers
 {
@@ -17,11 +16,11 @@ namespace Sibers.WebAPI.Controllers
             => (_service) = (service);
 
         [HttpPost("Create")]
-        [Auth(RoleTypes.Leader)]
-        public async Task<IActionResult> Create([FromBody] CreateProjectDto project)
+        [Authorize(Roles = "Leader")]
+        public async Task<Response> Create([FromBody] CreateProjectDto project)
         {
             if (project == null) throw new ArgumentNullException(nameof(project));
-            return Ok(await _service.CreateProject(project));
+            return await _service.CreateProject(project);
         }
 
         [HttpGet("GetAllProjects")]
@@ -46,7 +45,7 @@ namespace Sibers.WebAPI.Controllers
         }
 
         [HttpPut("EditProjectById")]
-        [Auth(RoleTypes.Leader)]
+        [Authorize(Roles = "Leader")]
         public async Task<IActionResult> EditProjectById(EditProjectDto project)
         {
             if (project == null) throw new ArgumentNullException(nameof(project));
@@ -54,21 +53,28 @@ namespace Sibers.WebAPI.Controllers
         }
 
         [HttpDelete("DeleteProjectById")]
-        [Auth(RoleTypes.Leader)]
-        public async Task<IActionResult> DeleteProjectById (long projectId)
+        [Authorize(Roles = "Leader")]
+        public async Task<Response> DeleteProjectById (long id)
         {
-            return Ok(await _service.DeleteProjectById(projectId));
+            return await _service.DeleteProjectById(id);
+        }
+
+        [HttpDelete("DeleteProjectByName")]
+        [Authorize(Roles = "Leader")]
+        public async Task<Response> DeleteProjectByName(string name)
+        {
+            return await _service.DeleteProjectByName(name);
         }
 
         [HttpDelete("DeleteEmployeeFromProjectById")]
-        [Auth(RoleTypes.Leader, RoleTypes.ProjectManager)]
-        public async Task<IActionResult> DeleteEmployeeFromProjectById(long employeeId, long projectId)
+        [Authorize(Roles = "Leader, ProjectManager")]
+        public async Task<Response> DeleteEmployeeFromProjectById(long employeeId, long projectId)
         {
-            return Ok(await _service.DeleteEmployeeFromProjectById(employeeId, projectId));
+            return await _service.DeleteEmployeeFromProjectById(employeeId, projectId);
         }
 
         [HttpPut("PutEmployeeToProject")]
-        [Auth(RoleTypes.Leader, RoleTypes.ProjectManager)]
+        [Authorize(Roles = "Leader, ProjectManager")]
         public async Task<IActionResult> PutEmployeeToProject(long employeeId, long projectId)
         {
             return Ok(await _service.PutEmployeeToProject(employeeId, projectId));

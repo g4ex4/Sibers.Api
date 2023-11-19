@@ -18,10 +18,11 @@ namespace Sibers.BLL.Services.Implementation
             => (_uow, _mapper) = (uow, mapper);
         public async Task<Response> CreateEmployee(CreateEmployeeDto dto)
         {
+            dto.UserId = new Random().Next(100, 1000);
             Employee newEmployee = _mapper.Map<Employee>(dto);
             await _uow.GetRepository<Employee>().AddAsync(newEmployee);
             await _uow.SaveChangesAsync();
-            return new Response(200, $"{newEmployee.Id}", true);
+            return new Response(200, $"Created employee with Id = {newEmployee.Id}", true);
 
         }
 
@@ -31,7 +32,7 @@ namespace Sibers.BLL.Services.Implementation
             if (employee == null) throw new NotFoundException(nameof(employee), id);
             _uow.GetRepository<Employee>().Delete(employee);
             await _uow.SaveChangesAsync();
-            return new Response(200, $"Project with Id = {id} deleted successfully", true);
+            return new Response(200, $"Employee with Id = {id} deleted successfully", true);
         }
 
         public async Task<List<EmployeeData>> GetAllEmployees()
@@ -62,6 +63,7 @@ namespace Sibers.BLL.Services.Implementation
             
             if (employee == null) throw new NotFoundException(nameof(Employee), data.Id);
 
+            data.UserId = employee.Id;
             employee = _mapper.Map<Employee>(data);
             _uow.GetRepository<Employee>().Update(employee);
             await _uow.SaveChangesAsync();

@@ -20,17 +20,21 @@ namespace Sibers.BLL.Services.Implementation
             => (_uow, _mapper) = (uow, mapper);
         public async Task<Response> CreateProject(CreateProjectDto dto)
         {
+            var existedProject = _uow.GetRepository<Project>()
+                .FirstOrDefaultAsync(x => x.Name.ToLower() == dto.Name.ToLower()).Result;
+            if (existedProject != null) throw new ExistException(nameof(Project), dto.Name);
+
             Project newProject = _mapper.Map<Project>(dto);
             var projectManager = 
                 await _uow.GetRepository<Employee>()
                 .Include(x => x.ManagedProjects)
                 .FirstOrDefaultAsync(x => x.Id == dto.ProjectManagerId);
-
+            newProject.StartDate = DateTime.Now;
             newProject.ProjectManagerId = projectManager?.Id;
 
             await _uow.GetRepository<Project>().AddAsync(newProject);
             await _uow.SaveChangesAsync();
-            return new Response(200, $"{nameof(Project)} created with Id = {newProject.Id}", true);
+            return new Response(200, $"Project created with Id = {newProject.Id}", true);
         }
 
         public async Task<Response> DeleteProjectById(long projectId)
@@ -43,6 +47,16 @@ namespace Sibers.BLL.Services.Implementation
             return new Response(200, $"Project with Id = {projectId} deleted successfully", true);
         }
 
+        public async Task<Response> DeleteProjectByName(string name)
+        {
+            var project = await _uow.GetRepository<Project>()
+                .FirstOrDefaultAsync(x => x.Name.ToLower() == name.ToLower());
+            if (project == null) throw new NotFoundException(nameof(project), name);
+            _uow.GetRepository<Project>().Delete(project);
+            await _uow.SaveChangesAsync();
+            return new Response(200, $"Project with name = {name} deleted successfully", true);
+        }
+
         public async Task<Response> DeleteEmployeeFromProjectById(long employeeId , long projectId)
         {
             var project = await _uow.GetRepository<ProjectEmployee>()
@@ -53,7 +67,7 @@ namespace Sibers.BLL.Services.Implementation
             return new Response(200, "Employee deleted successfully", true);
         }
 
-        public async Task<Project> EditProjectById(EditProjectDto dto)
+        public async Task<ProjectData> EditProjectById(EditProjectDto dto)
         {
             var origEntity = _uow.GetRepository<Project>().AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == dto.Id).Result;
@@ -67,7 +81,7 @@ namespace Sibers.BLL.Services.Implementation
 
             _uow.GetRepository<Project>().Update(origEntity);
             await _uow.SaveChangesAsync();
-            return origEntity;
+            return _mapper.Map<ProjectData>(origEntity);
         }
 
         public async Task<List<ProjectVM>> GetProjects()
@@ -102,13 +116,13 @@ namespace Sibers.BLL.Services.Implementation
             var result = _mapper.Map<List<ProjectVM>>(projects);
 
             if (!string.IsNullOrEmpty(searchParams.Name))
-                result = result.FindAll(x => x.Name == searchParams.Name);
+                result = result.FindAll(x => x.Name.ToLower() == searchParams.Name.ToLower());
 
             if(!string.IsNullOrEmpty(searchParams.CustomerName))
-                result = result.FindAll(x => x.CustomerName  == searchParams.CustomerName);
+                result = result.FindAll(x => x.CustomerName.ToLower() == searchParams.CustomerName.ToLower());
 
             if (!string.IsNullOrEmpty(searchParams.PerformerName))
-                result = result.FindAll(x => x.PerformerName == searchParams.PerformerName);
+                result = result.FindAll(x => x.PerformerName.ToLower() == searchParams.PerformerName.ToLower());
 
             if (searchParams.Priority != null)
                 result = result.FindAll(x => x.Priority == searchParams.Priority);

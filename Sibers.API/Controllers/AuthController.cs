@@ -1,16 +1,14 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Sibers.WebAPI.Models.DTO_s;
-using System.Security.Claims;
 using Sibers.BLL.Services.Interfaces;
 using AutoMapper;
 using Sibers.BLL.DTO.EmployeeDto_s;
 using Sibers.WebAPI.Models;
 using Sibers.BLL.Common.Exceptions;
 using static Sibers.WebAPI.Attributes.AuthAttribute;
-using Sibers.WebAPI.Attributes;
+using Sibers.BLL.Common.Responses;
 
 namespace Sibers.WebAPI.Controllers
 {
@@ -67,11 +65,11 @@ namespace Sibers.WebAPI.Controllers
             user.EmployeeId = Convert.ToInt32(employeeResponse.Message);
             await _userManager.AddToRoleAsync(user, "Employee");
             await _signInManager.SignInAsync(user, isPersistent: true);
-            return Ok(user.Id);
+            return Ok(new Response(200, "Registered successfully", true));
         }
 
         [HttpPost("/role/setRoleToUser")]
-        [Auth(RoleTypes.Leader)]
+        [Authorize(Roles = "Leader")]
         public async Task SetRole(long userId, RoleTypes roleId)
         {
 
@@ -100,7 +98,7 @@ namespace Sibers.WebAPI.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginDto login)
+        public async Task<Response> Login(LoginDto login)
         {
             var user = await _userManager.FindByNameAsync(login.UserName);
             if (user == null)
@@ -116,7 +114,7 @@ namespace Sibers.WebAPI.Controllers
             }
 
             await _signInManager.SignInAsync(user, login.RememberMe);
-            return Ok();
+            return new Response(200, "Logined successfully", true);
         }
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
@@ -130,18 +128,6 @@ namespace Sibers.WebAPI.Controllers
         {
             var result = Enum.GetName(typeof(RoleTypes), RoleId.Value);
             return Ok(result);
-        }
-
-        private async Task<ClaimsIdentity> GetIdentityAsync(User user)
-        {
-            var claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };
-            var roles = await _userManager.GetRolesAsync(user);
-
-            claims.AddRange(
-                roles.Select(role => (
-                    new Claim(ClaimTypes.Role, role))));
-
-            return new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         }
     }
 }

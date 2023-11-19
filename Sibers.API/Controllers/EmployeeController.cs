@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sibers.BLL.DTO.EmployeeDto_s;
 using Sibers.BLL.Services.Interfaces;
-using Sibers.WebAPI.Attributes;
-using static Sibers.WebAPI.Attributes.AuthAttribute;
 
 namespace Sibers.WebAPI.Controllers
 {
     [Route("api/[controller]")]
-    [Auth(RoleTypes.Leader)]
+    [Authorize(Roles = "Leader")]
     public class EmployeeController : BaseController
     {
         private readonly IMapper _mapper;

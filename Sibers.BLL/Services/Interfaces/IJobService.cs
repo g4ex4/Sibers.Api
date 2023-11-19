@@ -11,8 +11,10 @@ namespace Sibers.BLL.Services.Interfaces
         public Task<JobVM> GetJobDetailesById(long id);
         public Task<JobData> EditJobById(JobData data);
         public Task<Response> DeleteJobById(long id);
+        public Task<Response> DeleteJobByName(string name);
         public Task<List<JobVM>> SearchJobs(SearchJobDto searchparams);
-        public Task<JobData> SetStatusToJob(long id, JobStatus status);
+        public Task<JobData> SetStatusToJobById(long id, JobStatus status);
+        public Task<JobData> SetStatusToJobByName(string name, JobStatus status);
 
     }
 }

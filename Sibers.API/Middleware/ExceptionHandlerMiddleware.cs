@@ -1,6 +1,4 @@
-﻿using System.Net.Mime;
-using System.Net;
-using System.Text.Json;
+﻿using System.Net;
 using Sibers.BLL.Common.Responses;
 using Microsoft.AspNetCore.Diagnostics;
 

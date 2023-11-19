@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Extensions;
+using Sibers.BLL.Common.Responses;
 using Sibers.BLL.DTO.JobDto_s;
 using Sibers.BLL.Services.Interfaces;
 using Sibers.DAL.Enums;
-using Sibers.WebAPI.Attributes;
 using Sibers.WebAPI.Common.Helpers;
-using static Sibers.WebAPI.Attributes.AuthAttribute;
 
 namespace Sibers.WebAPI.Controllers
 {
@@ -19,15 +17,15 @@ namespace Sibers.WebAPI.Controllers
             => (_service) = (service);
 
         [HttpPost("Create")]
-        [Auth(RoleTypes.Leader, RoleTypes.ProjectManager)]
-        public async Task<IActionResult> Create([FromBody] CreateJobDto data)
+        [Authorize(Roles = "Leader, ProjectManager")]
+        public async Task<Response> Create(CreateJobDto data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             data.AuthorizerId = UserId;
-            return Ok(await _service.CreateJob(data));
+            return await _service.CreateJob(data);
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet("GetAllJobs")]
         public async Task<IActionResult> GetAllJobs()
         {
             var result = await _service.GetAllJobs();
@@ -41,7 +39,7 @@ namespace Sibers.WebAPI.Controllers
         }
 
         [HttpPut("EditJobById")]
-        [Auth(RoleTypes.ProjectManager, RoleTypes.Leader)]
+        [Authorize(Roles = "Leader, ProjectManager")]
         public async Task<IActionResult> EditJobById(JobData data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
@@ -49,17 +47,30 @@ namespace Sibers.WebAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPut("SetStatusToJob")]
-        public async Task<IActionResult> SetStatusToJob(long id, JobStatus status)
+        [HttpPut("SetStatusToJobById")]
+        public async Task<IActionResult> SetStatusToJobById(long id, JobStatus status)
         {
-            return Ok(await _service.SetStatusToJob(id, status));
+            return Ok(await _service.SetStatusToJobById(id, status));
+        }
+
+        [HttpPut("SetStatusToJobByName")]
+        public async Task<IActionResult> SetStatusToJobByName(string name, JobStatus status)
+        {
+            return Ok(await _service.SetStatusToJobByName(name, status));
         }
 
         [HttpDelete("DeleteJobById")]
-        [Auth(RoleTypes.Leader, RoleTypes.ProjectManager)]
+        [Authorize(Roles = "Leader, ProjectManager")]
         public async Task<IActionResult> DeleteJobById(long id)
         {
             return Ok(await _service.DeleteJobById(id));
+        }
+
+        [HttpDelete("DeleteJobByName")]
+        [Authorize(Roles = "Leader, ProjectManager")]
+        public async Task<Response> DeleteJobByName(string name)
+        {
+            return await _service.DeleteJobByName(name);
         }
 
         [HttpGet("SearchJobs")]

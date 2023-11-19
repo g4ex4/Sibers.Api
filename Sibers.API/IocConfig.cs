@@ -27,13 +27,15 @@ namespace Sibers.WebAPI
         /// </summary>
         public static IServiceCollection AddUnitOfWork(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddDbContext<IdentityContext>(opt
+            => opt.UseSqlServer(configuration.GetConnectionString("IdentityContext")));
+
             services.AddDbContext<AppDbContext>(opt =>
             {
                 opt.UseSqlServer(configuration.GetConnectionString("AppDbContext"));
             });
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddDbContext<IdentityContext>(opt
-            => opt.UseSqlServer(configuration.GetConnectionString("IdentityDbContext")));
             return services;
         }
 

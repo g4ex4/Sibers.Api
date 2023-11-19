@@ -1,9 +1,6 @@
-﻿
-
-using Sibers.DAL.Common;
+﻿using Sibers.DAL.Common;
 using Sibers.DAL.Interfaces;
 using System.Collections.Concurrent;
-using System;
 
 namespace Sibers.DAL.Implementations
 {
